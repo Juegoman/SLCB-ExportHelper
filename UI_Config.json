@@ -24,6 +24,14 @@
 		"function": "ExportCommandsButton",
 		"group": ""
 	},
+	"btnExportSFX": {
+		"type": "button",
+		"label": "Export SFX to CSV",
+		"tooltip": "Exports all SFX to csv file located in Export folder of script directory.",
+		"wsevent": "",
+		"function": "ExportSFXButton",
+		"group": ""
+	},
 	"btnExportCurrency": {
 		"type": "button",
 		"label": "Export Currency to CSV",

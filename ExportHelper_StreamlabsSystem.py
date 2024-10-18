@@ -127,6 +127,9 @@ def ExportQueueButton():
 def ExportCommandsButton():
     SaveCommandsToFile()
 
+def ExportSFXButton():
+    SaveSFXToFile()
+
 def ExportCurrencyButton():
     SaveCurrencyToFile()
 
@@ -153,6 +156,26 @@ def get_currency_list():
     g_manager = AnkhBotR2.Managers.GlobalManager.Instance
     currencies = g_manager.VMLocator.CurrencyView.Users
     return list(currencies)
+
+def SaveSFXToFile():
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    log = os.path.join(os.path.dirname(__file__) + "\Exports", "sfx.csv")
+
+    sfxs = get_sfx_list()
+
+    with codecs.open(log, "w", encoding="utf-8") as fout:
+        
+        writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["name", "file", "volume"])
+
+        for index, sfx in enumerate(sfxs):
+
+            writer.writerow([
+                sfx.Name,
+                sfx.File,
+                sfx.Volume,
+            ])
 
 def SaveCurrencyToFile():
     reload(sys)
@@ -181,26 +204,27 @@ def SaveCommandsToFile():
     log = os.path.join(os.path.dirname(__file__) + "\Exports", "commands.csv")
 
     commands = get_command_list()
-    sfx_list = get_sfx_list()
+    # sfx_list = get_sfx_list()
 
-    sfx_mapping = {
-        sfx.Name: {
-            "File": sfx.File,
-            "Volume": sfx.Volume
-        }
-        for sfx in sfx_list
-    }
+    # sfx_mapping = {
+    #     sfx.Name: {
+    #         "File": sfx.File,
+    #         "Volume": sfx.Volume
+    #     }
+    #     for sfx in sfx_list
+    # }
 
     with codecs.open(log, "w", encoding="utf-8") as fout:
         writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["name", "cost", "cooldown", "userCooldown", "sound", "sfx_file", "sfx_volume"])
+        writer.writerow(["name", "cost", "cooldown", "userCooldown", "sound"])
+        # writer.writerow(["name", "cost", "cooldown", "userCooldown", "sound", "sfx_file", "sfx_volume"])
         for index, command in enumerate(commands):
             # Look up the associated sfx by command.SoundFile
-            associated_sfx = sfx_mapping.get(command.SoundFile)
+            # associated_sfx = sfx_mapping.get(command.SoundFile)
 
             # If the sfx is found, extract its attributes; otherwise, default to empty strings
-            sfx_file = associated_sfx["File"] if associated_sfx else ""
-            sfx_volume = associated_sfx["Volume"] if associated_sfx else ""
+            # sfx_file = associated_sfx["File"] if associated_sfx else ""
+            # sfx_volume = associated_sfx["Volume"] if associated_sfx else ""
 
             writer.writerow([
                 command.Name,
@@ -208,8 +232,8 @@ def SaveCommandsToFile():
                 command.Cooldown,
                 command.UserCooldown,
                 command.SoundFile,
-                sfx_file,    # Add the sfx file attribute
-                sfx_volume   # Add the sfx volume attribute
+                # sfx_file,    # Add the sfx file attribute
+                # sfx_volume   # Add the sfx volume attribute
             ])
     
 
