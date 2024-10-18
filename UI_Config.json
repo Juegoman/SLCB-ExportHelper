@@ -16,6 +16,22 @@
 		"function": "ExportQuotesButton",
 		"group": ""
 	},
+	"btnExportCommands": {
+		"type": "button",
+		"label": "Export Commands to CSV",
+		"tooltip": "Exports all commands to csv file located in Export folder of script directory.",
+		"wsevent": "",
+		"function": "ExportCommandsButton",
+		"group": ""
+	},
+	"btnExportCurrency": {
+		"type": "button",
+		"label": "Export Currency to CSV",
+		"tooltip": "Exports all currency to csv file located in Export folder of script directory.",
+		"wsevent": "",
+		"function": "ExportCurrencyButton",
+		"group": ""
+	},
 	"btnExportExtraQuotes": {
 		"type": "button",
 		"label": "Export Extra Quotes to CSV",

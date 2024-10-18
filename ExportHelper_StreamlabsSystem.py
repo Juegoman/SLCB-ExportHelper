@@ -1,4 +1,4 @@
-import clr, json, os, codecs, re, System
+import clr, json, os, sys, codecs, re, System, csv, inspect, pprint
 clr.AddReference([asbly for asbly in System.AppDomain.CurrentDomain.GetAssemblies() if "AnkhBotR2" in str(asbly)][0])
 import AnkhBotR2
 
@@ -124,7 +124,96 @@ def ExportExtraQuotesButton():
 def ExportQueueButton():
     SaveQueueToFile(0,"max","QueueExport")
 
-def SaveQuotesToFile(startIndex, endIndex, fileName):
+def ExportCommandsButton():
+    SaveCommandsToFile()
+
+def ExportCurrencyButton():
+    SaveCurrencyToFile()
+
+def get_sfx_list():
+    """
+    List items have the following properties:
+        - Name
+        - File
+        - Volume
+        - Votes
+        - Group
+        - Commands
+    """
+    g_manager = AnkhBotR2.Managers.GlobalManager.Instance
+    sfx = g_manager.VMLocator.SFXView.SFX
+    return list(sfx) # Convert to list to make a copy of the ObservableCollection
+
+def get_command_list():
+    g_manager = AnkhBotR2.Managers.GlobalManager.Instance
+    commands = g_manager.VMLocator.CommandView.Commands
+    return list(commands)
+
+def get_currency_list():
+    g_manager = AnkhBotR2.Managers.GlobalManager.Instance
+    currencies = g_manager.VMLocator.CurrencyView.Users
+    return list(currencies)
+
+def SaveCurrencyToFile():
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    log = os.path.join(os.path.dirname(__file__) + "\Exports", "currency.csv")
+
+    currencys = get_currency_list()
+
+    with codecs.open(log, "w", encoding="utf-8") as fout:
+        
+        writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["name", "rank", "points", "minutes"])
+
+        for index, c_info in enumerate(currencys):
+
+            writer.writerow([
+                c_info.User.Name,
+                c_info.Rank,
+                c_info.Points,
+                c_info.TimeWatched,
+            ])
+
+def SaveCommandsToFile():
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    log = os.path.join(os.path.dirname(__file__) + "\Exports", "commands.csv")
+
+    commands = get_command_list()
+    sfx_list = get_sfx_list()
+
+    sfx_mapping = {
+        sfx.Name: {
+            "File": sfx.File,
+            "Volume": sfx.Volume
+        }
+        for sfx in sfx_list
+    }
+
+    with codecs.open(log, "w", encoding="utf-8") as fout:
+        writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["name", "cost", "cooldown", "userCooldown", "sound", "sfx_file", "sfx_volume"])
+        for index, command in enumerate(commands):
+            # Look up the associated sfx by command.SoundFile
+            associated_sfx = sfx_mapping.get(command.SoundFile)
+
+            # If the sfx is found, extract its attributes; otherwise, default to empty strings
+            sfx_file = associated_sfx["File"] if associated_sfx else ""
+            sfx_volume = associated_sfx["Volume"] if associated_sfx else ""
+
+            writer.writerow([
+                command.Name,
+                command.Cost,
+                command.Cooldown,
+                command.UserCooldown,
+                command.SoundFile,
+                sfx_file,    # Add the sfx file attribute
+                sfx_volume   # Add the sfx volume attribute
+            ])
+    
+
+def SaveQuotesToFile(startIndex, endIndex, fileName):    
     quoteView = AnkhBotR2.Managers.GlobalManager.Instance.VMLocator.QuoteView
     quotes = list(quoteView.Quotes)
 

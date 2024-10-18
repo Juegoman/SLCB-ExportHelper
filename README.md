@@ -1,5 +1,11 @@
 # SLCB Export Helper
 
+Modified to export Currency entries and Commands with any attached sound files.
+
+Thanks to https://github.com/LuisSanchez-Dev/streamlabs-chatbot-hacks for guidance on exporting sounds and SFX
+
+# Original Readme
+
 This script allows the user to export Quote, Extra Quote, and Queue data to CSVs either
 via using the added $export paremeter that comes with this script or by going to the script 
 properties and trigger the export by clicking on the corresponding buttons.
